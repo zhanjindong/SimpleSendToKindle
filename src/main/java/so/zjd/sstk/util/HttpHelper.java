@@ -10,8 +10,8 @@ import java.net.URL;
 
 public class HttpHelper {
 
-	public static StringBuilder download(String url) throws IOException {
-		return download(url, 5000, "UTF-8");
+	public static StringBuilder download(String url,int timeout) throws IOException {
+		return download(url, timeout, "UTF-8");
 	}
 
 	public static StringBuilder download(String url, int timeout, String encoding) throws IOException {
@@ -37,8 +37,8 @@ public class HttpHelper {
 		return result;
 	}
 
-	public static boolean download(String url, OutputStream os) throws IOException {
-		return download(url, 5000, "UTF-8", os);
+	public static boolean download(String url,int timeout, OutputStream os) throws IOException {
+		return download(url, timeout, "UTF-8", os);
 	}
 
 	public static boolean download(String url, int timeout, String encoding, OutputStream os) throws IOException {

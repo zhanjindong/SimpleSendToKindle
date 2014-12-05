@@ -85,16 +85,6 @@ public class RegexUtils {
 		return result;
 	}
 	
-	public static String match(String regex,String input){
-		Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(input);
-        if (matcher.find()) {
-            String match = matcher.group(0);
-            return match;
-        }
-        return "";
-	}
-
 	/**
 	 * 
 	 * 用给定的模式去分割输入的字符串。

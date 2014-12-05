@@ -14,12 +14,12 @@ import so.zjd.sstk.util.SeparatorUtils;
 
 public class PageEntry implements AutoCloseable {
 
-	private static final String SLASH = SeparatorUtils.getPathSeparator();
-
+	private static final String SLASH = SeparatorUtils.getFileSeparator();
 	private String url;
 	private StringBuilder content;
 	private String title;
 	private String tmpDir;
+	private String imgDir;
 	private String savePath;
 
 	public PageEntry(String url) {
@@ -29,13 +29,14 @@ public class PageEntry implements AutoCloseable {
 
 	private void prepare() {
 		try {
-			this.content = HttpHelper.download(url);
+			this.content = HttpHelper.download(url, GlobalConfig.DOWNLOAD_TIMEOUT);
 			Path path = Paths.get(GlobalConfig.BASE_TEMP_DIR);
 			if (!Files.exists(path)) {
 				Files.createDirectory(path);
 			}
 
 			this.tmpDir = GlobalConfig.BASE_TEMP_DIR + SLASH + clean(url);
+			this.imgDir = tmpDir + SLASH + "images" + SLASH;
 			path = Paths.get(tmpDir);
 			if (Files.exists(path)) {
 				delete(path);
@@ -44,7 +45,7 @@ public class PageEntry implements AutoCloseable {
 			path = new File(GlobalConfig.BASE_TEMP_DIR + SLASH + clean(url) + "/images").toPath();
 			Files.createDirectory(path);
 
-			this.title = RegexUtils.match("(?<=<title>).*?(?=</title>)", this.content.toString());
+			this.title = RegexUtils.findAll("(?<=<title>).*?(?=</title>)", this.content.toString(), false).get(0);
 			if (StringUtils.isEmpty(this.title)) {
 				this.title = "Unknow";
 			}
@@ -55,7 +56,7 @@ public class PageEntry implements AutoCloseable {
 	}
 
 	private String clean(String url) {
-		return url.replace("http://", "").replace("/", ".");
+		return url.replace("http://", "").replace("/", ".").replace("?", "");
 	}
 
 	public String getUrl() {
@@ -91,7 +92,23 @@ public class PageEntry implements AutoCloseable {
 	}
 
 	public void close() {
-		delete(tmpDir);
+		// delete(tmpDir);
+	}
+
+	public String getImgDir() {
+		return imgDir;
+	}
+
+	public void setImgDir(String imgDir) {
+		this.imgDir = imgDir;
+	}
+
+	public String getSavePath() {
+		return savePath;
+	}
+
+	public void setSavePath(String savePath) {
+		this.savePath = savePath;
 	}
 
 	public void delete(Path path) {

@@ -1,38 +1,33 @@
 package so.zjd.sstk;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Service {
+	private static ExecutorService service = Executors.newFixedThreadPool(GlobalConfig.SERVICE_THREADS);
 	private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
-	private static ExecutorService service = Executors.newFixedThreadPool(2);
 
-	static {
-		GlobalConfig.init();
-	}
-
-	public void launch(String[] urls) {
+	public void launch(String[] urls) throws InterruptedException {
 		for (final String url : urls) {
-			service.submit(new Runnable() {
-				@Override
-				public void run() {
-					try (PageEntry page = new PageEntry(url)) {
-						LOGGER.debug(page.toString());
-						new MobiCreator(page).create();
-					}
+			try (PageEntry page = new PageEntry(url)) {
+				LOGGER.debug(page.toString());
+				try {
+					new MobiCreator(page).create();
+				} catch (Throwable e) {
+					LOGGER.error("service error.", e);
 				}
-			});
+			}
 		}
 		service.shutdown();
+		service.awaitTermination(5, TimeUnit.SECONDS);
 	}
 
-	public static void main(String[] args) throws IOException, URISyntaxException {
+	public static void main(String[] args) {
 		String url = "";
 		if (args.length == 0) {
 			return;
@@ -44,6 +39,10 @@ public class Service {
 		LOGGER.debug("url:" + url);
 
 		Service service = new Service();
-		service.launch(args);
+		try {
+			service.launch(args);
+		} catch (Throwable e) {
+			LOGGER.error("service error.", e);
+		}
 	}
 }

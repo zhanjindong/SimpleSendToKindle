@@ -1,16 +1,25 @@
 package so.zjd.sstk;
 
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import so.zjd.sstk.util.HttpHelper;
+import so.zjd.sstk.util.RegexUtils;
 
 public class MobiCreator {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(MobiCreator.class);
 	private static final char[] IMG_START_TAG = new char[] { '<', 'i', 'm', 'g' };
 	private static final char[] IMG_END_TAG = new char[] { '/', '>' };
 
-	private static ExecutorService imgDownloaders = Executors.newFixedThreadPool(2);
 	private static List<String> supportedImgFormats = new ArrayList<String>();
 
 	static {
@@ -27,7 +36,7 @@ public class MobiCreator {
 		this.page = page;
 	}
 
-	public void create() {
+	public void create() throws InterruptedException {
 		processImages(page);
 	}
 
@@ -35,8 +44,6 @@ public class MobiCreator {
 		StringBuilder processed = new StringBuilder();
 		StringBuilder imgElement = new StringBuilder();
 		StringBuilder content = page.getContent();
-		// content = new
-		// StringBuilder("<p><span><img style=\"border: 1px solid black;\" src=\"http://images.cnitblog.com/blog/379997/201308/03231707-438355177e8940849c93a76bcff24ece.png\" alt=\"\" /></span></p>");
 		for (int i = 0; i < content.length(); i++) {
 			char c = content.charAt(i);
 			if (index < 4 && c == IMG_START_TAG[index]) {
@@ -61,19 +68,36 @@ public class MobiCreator {
 						break;
 					}
 				}
-				System.out.println("img element:" + imgElement.toString());
-				downloadImg(imgElement);
-				processed.append(imgElement.toString());
+				processed.append(downloadImage(imgElement.toString()));
 				imgElement.delete(0, imgElement.length());
 			} else {
 				processed.append(c);
 			}
+			page.setContent(processed);
 		}
-		System.out.println(processed.toString().equals(content.toString()));
-		System.out.println();
-	}
-	
-	private void downloadImg(StringBuilder imgElement){
 	}
 
+	private String downloadImage(String imgElement) {
+		// LOGGER.debug("img element:"+imgElement.toString());
+		final String url = RegexUtils.findAll("(?<=src=\").*?(?=\")", imgElement, false).get(0);
+		final String fileName = getFileName(url);
+		final String result = RegexUtils.replaceAll("(?<=src=\").*?(?=\")", imgElement, "images/" + fileName, false);
+		try (OutputStream os = new FileOutputStream(page.getImgDir() + fileName)) {
+			// LOGGER.debug("image save path:" + page.getImgDir() +
+			// fileName);
+			HttpHelper.download(url, GlobalConfig.DOWNLOAD_TIMEOUT, os);
+			LOGGER.debug("downloaded url:" + url + ",replaced img tag:" + result);
+		} catch (Exception e) {
+			LOGGER.error("download image error:" + url);
+		}
+		return result;
+	}
+
+	private String getFileName(String url) {
+		int index = url.lastIndexOf("/");
+		if (index != -1) {
+			return url.substring(index + 1);
+		}
+		return "";
+	}
 }
