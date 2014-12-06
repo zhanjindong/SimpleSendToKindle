@@ -92,7 +92,9 @@ public class PageEntry implements AutoCloseable {
 	}
 
 	public void close() {
-		// delete(tmpDir);
+		if (GlobalConfig.DELETE_TEMP_DIR) {
+			delete(tmpDir);
+		}
 	}
 
 	public String getImgDir() {

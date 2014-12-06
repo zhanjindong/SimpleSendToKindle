@@ -3,9 +3,15 @@ package so.zjd.sstk;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -20,24 +26,20 @@ public class MobiCreator {
 	private static final char[] IMG_START_TAG = new char[] { '<', 'i', 'm', 'g' };
 	private static final char[] IMG_END_TAG = new char[] { '/', '>' };
 
-	private static List<String> supportedImgFormats = new ArrayList<String>();
+	private static ExecutorService downloaders;
+	private List<FutureTask<Boolean>> futureTasks = new ArrayList<>();
 
-	static {
-		supportedImgFormats.add(".JPEG");
-		supportedImgFormats.add(".JPG");
-		supportedImgFormats.add(".GIF");
-		supportedImgFormats.add(".PNG");
-		supportedImgFormats.add(".BMP");
-	}
 	private PageEntry page;
 	private int index = 0;
 
-	public MobiCreator(PageEntry page) {
+	public MobiCreator(ExecutorService service, PageEntry page) {
+		this.downloaders = service;
 		this.page = page;
 	}
 
 	public void create() throws InterruptedException {
 		processImages(page);
+		waitDownloadCompleted();
 	}
 
 	protected void processImages(PageEntry page) {
@@ -78,19 +80,39 @@ public class MobiCreator {
 	}
 
 	private String downloadImage(String imgElement) {
-		// LOGGER.debug("img element:"+imgElement.toString());
-		final String url = RegexUtils.findAll("(?<=src=\").*?(?=\")", imgElement, false).get(0);
+		List<String> matchs = RegexUtils.findAll("(?<=src=\").*?(?=\")", imgElement, false);
+		if (matchs.isEmpty()) {
+			return imgElement;
+		}
+		String url = matchs.get(0);
 		final String fileName = getFileName(url);
 		final String result = RegexUtils.replaceAll("(?<=src=\").*?(?=\")", imgElement, "images/" + fileName, false);
-		try (OutputStream os = new FileOutputStream(page.getImgDir() + fileName)) {
-			// LOGGER.debug("image save path:" + page.getImgDir() +
-			// fileName);
-			HttpHelper.download(url, GlobalConfig.DOWNLOAD_TIMEOUT, os);
-			LOGGER.debug("downloaded url:" + url + ",replaced img tag:" + result);
-		} catch (Exception e) {
-			LOGGER.error("download image error:" + url);
-		}
+		final ImageEntry img = new ImageEntry(fileName, url, page.getImgDir() + fileName);
+		FutureTask<Boolean> task = new FutureTask<>(new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				try (OutputStream os = new FileOutputStream(img.getSavePath())) {
+					HttpHelper.download(img.getDownloadUrl(), GlobalConfig.DOWNLOAD_TIMEOUT, os);
+					LOGGER.debug("downloaded image:" + img.toString());
+				} catch (Exception e) {
+					LOGGER.error("download image error:" + img.getDownloadUrl());
+				}
+				return true;
+			}
+		});
+		downloaders.submit(task);
+		futureTasks.add(task);
 		return result;
+	}
+
+	private void waitDownloadCompleted() {
+		for (FutureTask<Boolean> task : futureTasks) {
+			try {
+				task.get();
+			} catch (InterruptedException | ExecutionException e) {
+				LOGGER.error("download image error.", e);
+			}
+		}
 	}
 
 	private String getFileName(String url) {
