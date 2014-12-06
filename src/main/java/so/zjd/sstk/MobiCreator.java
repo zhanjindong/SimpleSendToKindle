@@ -1,7 +1,9 @@
 package so.zjd.sstk;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import so.zjd.sstk.util.HttpHelper;
+import so.zjd.sstk.util.IOUtils;
+import so.zjd.sstk.util.MailSender;
+import so.zjd.sstk.util.PathUtils;
 import so.zjd.sstk.util.RegexUtils;
 
 public class MobiCreator {
@@ -37,9 +42,32 @@ public class MobiCreator {
 		this.page = page;
 	}
 
-	public void create() throws InterruptedException {
+	public void create() throws InterruptedException, IOException, URISyntaxException {
 		processImages(page);
 		waitDownloadCompleted();
+		generateMobiFile(page);
+	}
+
+	private void generateMobiFile(PageEntry page) throws IOException, URISyntaxException {
+		page.save();
+		String kindlegenPath = PathUtils.getRealPath("classpath:kindlegen.exe");
+		String cmdStr = String.format(kindlegenPath + " %s -locale zh", page.getSavePath());
+		Process process;
+		process = Runtime.getRuntime().exec(cmdStr);
+		try {
+			// process.waitFor();
+			String result = new String(IOUtils.read(process.getInputStream()));
+			LOGGER.debug("kindlegen output info:" + result);
+			sendToKindle(page);
+		} catch (Exception e) {
+			LOGGER.error("kindlegen error.", e);
+		}
+	}
+
+	private void sendToKindle(PageEntry page) {
+		MailSender mailSender = new MailSender(GlobalConfig.CONFIGS);
+		mailSender.sendFrom(page.getTitle(), page.getMobiFilePath());
+		LOGGER.debug("sended mobi file to：" + GlobalConfig.CONFIGS.getProperty("mail.to"));
 	}
 
 	protected void processImages(PageEntry page) {
@@ -95,7 +123,7 @@ public class MobiCreator {
 					HttpHelper.download(img.getDownloadUrl(), GlobalConfig.DOWNLOAD_TIMEOUT, os);
 					LOGGER.debug("downloaded image:" + img.toString());
 				} catch (Exception e) {
-					LOGGER.error("download image error:" + img.getDownloadUrl());
+					LOGGER.error("download image error:" + img.getDownloadUrl(),e);
 				}
 				return true;
 			}

@@ -9,18 +9,19 @@ import java.nio.file.Paths;
 import org.apache.commons.lang.StringUtils;
 
 import so.zjd.sstk.util.HttpHelper;
+import so.zjd.sstk.util.IOUtils;
 import so.zjd.sstk.util.RegexUtils;
 import so.zjd.sstk.util.SeparatorUtils;
 
 public class PageEntry implements AutoCloseable {
 
-	private static final String SLASH = SeparatorUtils.getFileSeparator();
 	private String url;
 	private StringBuilder content;
 	private String title;
 	private String tmpDir;
 	private String imgDir;
 	private String savePath;
+	private String mobiFilePath;
 
 	public PageEntry(String url) {
 		this.url = url;
@@ -35,28 +36,36 @@ public class PageEntry implements AutoCloseable {
 				Files.createDirectory(path);
 			}
 
-			this.tmpDir = GlobalConfig.BASE_TEMP_DIR + SLASH + clean(url);
-			this.imgDir = tmpDir + SLASH + "images" + SLASH;
+			this.tmpDir = GlobalConfig.BASE_TEMP_DIR + GlobalConfig.SLASH + clean(url);
+			this.imgDir = tmpDir + GlobalConfig.SLASH + "images" + GlobalConfig.SLASH;
 			path = Paths.get(tmpDir);
 			if (Files.exists(path)) {
 				delete(path);
 			}
 			Files.createDirectory(path);
-			path = new File(GlobalConfig.BASE_TEMP_DIR + SLASH + clean(url) + "/images").toPath();
+			path = new File(GlobalConfig.BASE_TEMP_DIR + GlobalConfig.SLASH + clean(url) + "/images").toPath();
 			Files.createDirectory(path);
 
-			this.title = RegexUtils.findAll("(?<=<title>).*?(?=</title>)", this.content.toString(), false).get(0);
-			if (StringUtils.isEmpty(this.title)) {
+			String tmpTitle = RegexUtils.findAll("(?<=<title>).*?(?=</title>)", this.content.toString(), false).get(0);
+			if (StringUtils.isEmpty(tmpTitle)) {
 				this.title = "Unknow";
+			} else {
+				this.title = clean(tmpTitle);
 			}
-			this.savePath = this.tmpDir + SLASH + this.title + ".html";
+
+			this.savePath = this.tmpDir + GlobalConfig.SLASH + this.title + ".html";
+			this.mobiFilePath = this.tmpDir + GlobalConfig.SLASH + this.title + ".mobi";
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	private String clean(String url) {
-		return url.replace("http://", "").replace("/", ".").replace("?", "");
+		return url.replace("http://", "").replace("/", ".").replace("?", "").replace(" ", "").replace("&nbsp;", "");
+	}
+
+	public void save() throws IOException {
+		IOUtils.write(savePath, content.toString(), true);
 	}
 
 	public String getUrl() {
@@ -111,6 +120,14 @@ public class PageEntry implements AutoCloseable {
 
 	public void setSavePath(String savePath) {
 		this.savePath = savePath;
+	}
+
+	public String getMobiFilePath() {
+		return mobiFilePath;
+	}
+
+	public void setMobiFilePath(String mobiFilePath) {
+		this.mobiFilePath = mobiFilePath;
 	}
 
 	public void delete(Path path) {

@@ -76,7 +76,7 @@ public class Service implements AutoCloseable {
 		try (Service service = new Service()) {
 			service.launch(args);
 		} catch (Throwable e) {
-			LOGGER.error("imgDownloaderService error.", e);
+			LOGGER.error("service error.", e);
 		}
 	}
 
