@@ -99,8 +99,7 @@ public class MobiGenerator {
 		if (matchs.isEmpty()) {
 			return imgElement;
 		}
-		String url = matchs.get(0);
-
+		String url = processRelativeImageUrl(matchs.get(0));
 		final String fileName = getImageFileName(url);
 		final String result = RegexUtils.replaceAll("(?<=src=\").*?(?=\")", imgElement, "images/" + fileName, false);
 		final ImageEntry img = new ImageEntry(fileName, url, page.getImgDir() + fileName);
@@ -119,6 +118,25 @@ public class MobiGenerator {
 		downloaders.submit(task);
 		futureTasks.add(task);
 		return result;
+	}
+
+	// ./images/mem/figure9.png
+	// images/mem/figure9.png
+	private String processRelativeImageUrl(String url) {
+		if (url.startsWith("http://")) {
+			return url;
+		}
+
+		String pageUrl = page.getUrl();
+		int index = pageUrl.lastIndexOf("/");
+		pageUrl = pageUrl.substring(0, index + 1);
+		index = url.indexOf("/");
+		if (index != -1) {
+			url = url.substring(index + 1);
+		}
+		url = pageUrl + url;
+
+		return url;
 	}
 
 	private void waitDownloadCompleted() {

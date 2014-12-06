@@ -22,14 +22,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * 文件路径寻址工具<br />
- * 开发者可以从{@link ResourceConstants}中查找支持的三种路径寻址前缀<br />
- * 举例：ResourceUtils.loadResource("classpath*:log/log4j.xml");
- * <p>
- * 
- * @author chen.chen.9
- * @author jdzhan
- * @date 2014-3-19
+ * 文件路径寻址工具。<br />
  */
 public class ResourceUtils {
 	/** 加锁工具 */
@@ -38,26 +31,6 @@ public class ResourceUtils {
 	/** {@link ClassLoader} */
 	private static ClassLoader classLoader;
 
-	/**
-	 * 从项目，jar或文件系统中读取指定路径的文件<br />
-	 * 与loadResources()区别是本方法在有返回值时默认只返回一条记录，其余丢弃
-	 * <p>
-	 * 
-	 * @author chen.chen.9, 2014-3-19
-	 * @param locationPattern
-	 * <br/>
-	 *            0. 路径寻址前缀请参见{@link ResourceConstants}<br />
-	 *            1. 使用file，classpath和classpath*做路径开头<br />
-	 *            2. classpath寻址项目中的文件<br />
-	 *            3. classpath*既寻址项目，也寻址jar包中的文件<br />
-	 *            4. file寻址文件系统中的文件<br />
-	 *            5. 默认是classpath 6.
-	 *            例如：classpath*:log/log4j.xml;file:/home/ydhl/
-	 *            abc.sh;classpath:log/log4j.xml
-	 * @return 以URL返回结果
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 */
 	public static URL loadResource(String locationPattern) throws IOException, URISyntaxException {
 		URL[] urlArray = loadResources(locationPattern);
 

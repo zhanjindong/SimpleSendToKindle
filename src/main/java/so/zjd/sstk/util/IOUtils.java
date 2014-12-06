@@ -20,10 +20,6 @@ import org.apache.commons.io.output.FileWriterWithEncoding;
 /**
  * 
  * 提供基本的IO和流相关的操作。
- * <p>
- * <b>示例：</b> {@link com.iflytek.ossp.framework.example.IOUtilsExample}
- * 
- * @author jdzhan,2014-7-29
  * 
  */
 public final class IOUtils {

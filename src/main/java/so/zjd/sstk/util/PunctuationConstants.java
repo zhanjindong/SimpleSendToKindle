@@ -1,13 +1,5 @@
-
 package so.zjd.sstk.util;
 
-/**
- * 标点符号常量枚举
- * <p>
- * 
- * @author chen.chen.9
- * @date 2014-3-21
- */
 public enum PunctuationConstants {
 	/** 逗号 */
 	COMMA(","),

@@ -6,13 +6,6 @@
 
 package so.zjd.sstk.util;
 
-/**
- * 与资源寻址相关的常量枚举
- * <p>
- * 
- * @author chen.chen.9
- * @date 2014-3-19
- */
 public enum ResourceConstants {
 	/** 从项目和jar中读取资源的URL前缀 */
 	CLASSPATH_ALL_URL_PREFIX("classpath*:"),
@@ -35,25 +28,12 @@ public enum ResourceConstants {
 	/** windows文件分隔符 */
 	WINDOWS_FOLDER_SEPARATOR("\\");
 
-	/** value */
 	private String value;
 
-	/**
-	 * constructor
-	 * 
-	 * @param value
-	 *            value
-	 */
 	private ResourceConstants(String value) {
 		this.value = value;
 	}
 
-	/**
-	 * getter method
-	 * 
-	 * @see ResourceConstants#value
-	 * @return the value
-	 */
 	public String getValue() {
 		return value;
 	}

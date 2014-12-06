@@ -5,15 +5,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
  * 
  * 封装一些常用的正则匹配操作。
  * <p>
- * <b>示例：</b>
- * {@link com.iflytek.ossp.framework.example.common.text.RegexUtilsExample}
  * 
  * @author jdzhan,2014-7-29
  * 
@@ -84,7 +81,7 @@ public class RegexUtils {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 
 	 * 用给定的模式去分割输入的字符串。
