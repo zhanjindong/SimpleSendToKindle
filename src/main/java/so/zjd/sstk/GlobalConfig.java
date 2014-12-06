@@ -10,6 +10,13 @@ import org.slf4j.LoggerFactory;
 import so.zjd.sstk.util.PathUtils;
 import so.zjd.sstk.util.SeparatorUtils;
 
+/**
+ * 
+ * The global configurations.
+ * 
+ * @author jdzhan,2014-12-6
+ * 
+ */
 public class GlobalConfig {
 	public static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
 	public static final String WORK_DIR = PathUtils.getAppDir(GlobalConfig.class);
@@ -36,9 +43,5 @@ public class GlobalConfig {
 		} catch (Exception e) {
 			LOGGER.error("static init error.", e);
 		}
-	}
-
-	public static void init() {
-		// do nothing
 	}
 }

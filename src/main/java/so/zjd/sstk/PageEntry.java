@@ -12,6 +12,13 @@ import so.zjd.sstk.util.HttpHelper;
 import so.zjd.sstk.util.IOUtils;
 import so.zjd.sstk.util.RegexUtils;
 
+/**
+ * 
+ * Represents of web pages.
+ * 
+ * @author jdzhan,2014-12-6
+ * 
+ */
 public class PageEntry implements AutoCloseable {
 
 	private String url;
@@ -60,7 +67,8 @@ public class PageEntry implements AutoCloseable {
 	}
 
 	private String normalizePath(String url) {
-		return url.trim().replace("http://", "").replace("/", ".").replace("?", "").replace(" ", "-").replace("&nbsp;", "");
+		return url.trim().replace("http://", "").replace("/", ".").replace("?", "").replace(" ", "-")
+				.replace("&nbsp;", "");
 	}
 
 	public void save() throws IOException {

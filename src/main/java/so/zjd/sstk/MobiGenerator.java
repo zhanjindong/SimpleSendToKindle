@@ -19,6 +19,13 @@ import so.zjd.sstk.util.IOUtils;
 import so.zjd.sstk.util.PathUtils;
 import so.zjd.sstk.util.RegexUtils;
 
+/**
+ * 
+ * Kindle .mobi file Generator.
+ * 
+ * @author jdzhan,2014-12-6
+ * 
+ */
 public class MobiGenerator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MobiGenerator.class);
@@ -45,7 +52,7 @@ public class MobiGenerator {
 	private void generateMobiFile(PageEntry page) throws IOException, URISyntaxException {
 		page.save();
 		String kindlegenPath = PathUtils.getRealPath("classpath:bin/kindlegen.exe");
-		String cmdStr = String.format(kindlegenPath + " %s -locale zh", page.getSavePath());
+		String cmdStr = String.format(kindlegenPath + " %s -c1 -locale zh", page.getSavePath());
 		Process process;
 		process = Runtime.getRuntime().exec(cmdStr);
 		try {

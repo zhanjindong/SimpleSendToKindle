@@ -7,11 +7,17 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
+/**
+ * 
+ * Http helper.
+ * 
+ * @author jdzhan,2014-12-6
+ * 
+ */
 public class HttpHelper {
 
-	public static StringBuilder download(String url,int timeout) throws IOException {
+	public static StringBuilder download(String url, int timeout) throws IOException {
 		return download(url, timeout, "UTF-8");
 	}
 
@@ -38,7 +44,7 @@ public class HttpHelper {
 		return result;
 	}
 
-	public static boolean download(String url,int timeout, OutputStream os) throws IOException {
+	public static boolean download(String url, int timeout, OutputStream os) throws IOException {
 		return download(url, timeout, "UTF-8", os);
 	}
 
@@ -48,7 +54,7 @@ public class HttpHelper {
 		BufferedReader br = null;
 
 		try {
-			url=url.replace(" ", "%20");
+			url = url.replace(" ", "%20");
 			urlConnection = cretateConnection("GET", url, timeout);
 			is = urlConnection.getInputStream();
 			IOUtils.write(is, os);

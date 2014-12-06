@@ -23,6 +23,13 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * Mail send helper class via smpt protocol.
+ * 
+ * @author jdzhan,2014-12-6
+ * 
+ */
 public class MailSender {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MailSender.class);
@@ -32,17 +39,17 @@ public class MailSender {
 		this.config = config;
 	}
 
-	public void sendFrom(String subject,String filePath) {
+	public void sendFrom(String subject, String filePath) {
 		if (StringUtils.isEmpty(filePath)) {
 			throw new IllegalArgumentException("the arg:filePath can not be null or empty");
 		}
 
 		LOGGER.debug("sending mail from path: " + filePath);
-		MailUtil.send(subject,filePath, config);
+		MailUtil.send(subject, filePath, config);
 	}
 
 	private static class MailUtil {
-		public static void send(String subject,String filePath, final Properties config) {
+		public static void send(String subject, String filePath, final Properties config) {
 			Session session = Session.getInstance(config, new Authenticator() {
 				@Override
 				protected PasswordAuthentication getPasswordAuthentication() {

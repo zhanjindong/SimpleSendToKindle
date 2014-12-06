@@ -3,6 +3,13 @@ package so.zjd.sstk;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * Represents of image element.
+ * 
+ * @author jdzhan,2014-12-6
+ * 
+ */
 public class ImageEntry {
 	private String downloadUrl;
 	private String savePath;
@@ -18,7 +25,7 @@ public class ImageEntry {
 		supportedImgFormats.add(".BMP");
 	}
 
-	public ImageEntry(String fileName,String downloadUrl, String savePath) {
+	public ImageEntry(String fileName, String downloadUrl, String savePath) {
 		this.fileName = fileName;
 		this.downloadUrl = downloadUrl;
 		this.savePath = savePath;

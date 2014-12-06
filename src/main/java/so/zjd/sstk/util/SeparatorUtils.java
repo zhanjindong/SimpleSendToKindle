@@ -2,6 +2,13 @@ package so.zjd.sstk.util;
 
 import java.util.Properties;
 
+/**
+ * 
+ * Separators.
+ * 
+ * @author jdzhan,2014-12-6
+ * 
+ */
 public class SeparatorUtils {
 
 	/* system properties to get separators */
@@ -35,4 +42,3 @@ public class SeparatorUtils {
 	}
 
 }
-

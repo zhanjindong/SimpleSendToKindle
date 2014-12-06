@@ -1,9 +1,3 @@
-/*
- * Create Author  : chen.chen.9
- * Create Date    : 2014-3-19
- * File Name      : ResourceUtils.java
- */
-
 package so.zjd.sstk.util;
 
 import java.io.File;
@@ -22,7 +16,11 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * 文件路径寻址工具。<br />
+ * 
+ * 文件路径寻址工具。
+ *
+ * @author jdzhan,2014-12-6
+ *
  */
 public class ResourceUtils {
 	/** 加锁工具 */

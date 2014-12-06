@@ -19,7 +19,9 @@ import org.apache.commons.io.output.FileWriterWithEncoding;
 
 /**
  * 
- * 提供基本的IO和流相关的操作。
+ * Provide some I/O operations.
+ * 
+ * @author jdzhan,2014-12-6
  * 
  */
 public final class IOUtils {
@@ -209,10 +211,10 @@ public final class IOUtils {
 	 */
 	public static void write(File file, String content, boolean append) throws IOException {
 
-		FileWriter fileWriter = null;
+		FileWriterWithEncoding fileWriter = null;
 		try {
 
-			fileWriter = new FileWriter(file, append);
+			fileWriter = new FileWriterWithEncoding(file, "UTF-8", append);
 			fileWriter.write(content);
 		} finally {
 			close(fileWriter);
