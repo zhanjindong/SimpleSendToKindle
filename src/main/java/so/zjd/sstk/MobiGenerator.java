@@ -44,7 +44,7 @@ public class MobiGenerator {
 
 	private void generateMobiFile(PageEntry page) throws IOException, URISyntaxException {
 		page.save();
-		String kindlegenPath = PathUtils.getRealPath("classpath:kindlegen.exe");
+		String kindlegenPath = PathUtils.getRealPath("classpath:bin/kindlegen.exe");
 		String cmdStr = String.format(kindlegenPath + " %s -locale zh", page.getSavePath());
 		Process process;
 		process = Runtime.getRuntime().exec(cmdStr);
@@ -122,14 +122,20 @@ public class MobiGenerator {
 
 	// ./images/mem/figure9.png
 	// images/mem/figure9.png
+	// /images/mem/figure9.png
 	private String processRelativeImageUrl(String url) {
 		if (url.startsWith("http://")) {
 			return url;
 		}
-
 		String pageUrl = page.getUrl();
-		int index = pageUrl.lastIndexOf("/");
-		pageUrl = pageUrl.substring(0, index + 1);
+
+		if (url.startsWith("/")) {
+			int index = pageUrl.indexOf('/', 7);
+			pageUrl = pageUrl.substring(0, index + 1);
+		} else {
+			int index = pageUrl.lastIndexOf("/");
+			pageUrl = pageUrl.substring(0, index + 1);
+		}
 		index = url.indexOf("/");
 		if (index != -1) {
 			url = url.substring(index + 1);

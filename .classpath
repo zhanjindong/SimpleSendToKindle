@@ -11,7 +11,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="src/main/bin"/>
 	<classpathentry kind="src" path="src/main/chrome"/>
 	<classpathentry kind="src" path="src/main/assembly"/>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
