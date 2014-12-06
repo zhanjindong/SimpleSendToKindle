@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 
 public class HttpHelper {
 
@@ -47,6 +48,7 @@ public class HttpHelper {
 		BufferedReader br = null;
 
 		try {
+			url=url.replace(" ", "%20");
 			urlConnection = cretateConnection("GET", url, timeout);
 			is = urlConnection.getInputStream();
 			IOUtils.write(is, os);

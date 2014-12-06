@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import so.zjd.sstk.util.HttpHelper;
 import so.zjd.sstk.util.IOUtils;
 import so.zjd.sstk.util.RegexUtils;
-import so.zjd.sstk.util.SeparatorUtils;
 
 public class PageEntry implements AutoCloseable {
 
@@ -36,21 +35,21 @@ public class PageEntry implements AutoCloseable {
 				Files.createDirectory(path);
 			}
 
-			this.tmpDir = GlobalConfig.BASE_TEMP_DIR + GlobalConfig.SLASH + clean(url);
+			this.tmpDir = GlobalConfig.BASE_TEMP_DIR + GlobalConfig.SLASH + normalizePath(url);
 			this.imgDir = tmpDir + GlobalConfig.SLASH + "images" + GlobalConfig.SLASH;
 			path = Paths.get(tmpDir);
 			if (Files.exists(path)) {
 				delete(path);
 			}
 			Files.createDirectory(path);
-			path = new File(GlobalConfig.BASE_TEMP_DIR + GlobalConfig.SLASH + clean(url) + "/images").toPath();
+			path = new File(GlobalConfig.BASE_TEMP_DIR + GlobalConfig.SLASH + normalizePath(url) + "/images").toPath();
 			Files.createDirectory(path);
 
 			String tmpTitle = RegexUtils.findAll("(?<=<title>).*?(?=</title>)", this.content.toString(), false).get(0);
 			if (StringUtils.isEmpty(tmpTitle)) {
 				this.title = "Unknow";
 			} else {
-				this.title = clean(tmpTitle);
+				this.title = normalizePath(tmpTitle);
 			}
 
 			this.savePath = this.tmpDir + GlobalConfig.SLASH + this.title + ".html";
@@ -60,7 +59,7 @@ public class PageEntry implements AutoCloseable {
 		}
 	}
 
-	private String clean(String url) {
+	private String normalizePath(String url) {
 		return url.replace("http://", "").replace("/", ".").replace("?", "").replace(" ", "").replace("&nbsp;", "");
 	}
 

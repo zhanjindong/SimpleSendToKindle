@@ -5,16 +5,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +26,7 @@ public class MobiCreator {
 	private static final char[] IMG_START_TAG = new char[] { '<', 'i', 'm', 'g' };
 	private static final char[] IMG_END_TAG = new char[] { '/', '>' };
 
-	private static ExecutorService downloaders;
+	private ExecutorService downloaders;
 	private List<FutureTask<Boolean>> futureTasks = new ArrayList<>();
 
 	private PageEntry page;
@@ -113,7 +108,8 @@ public class MobiCreator {
 			return imgElement;
 		}
 		String url = matchs.get(0);
-		final String fileName = getFileName(url);
+
+		final String fileName = getImageFileName(url);
 		final String result = RegexUtils.replaceAll("(?<=src=\").*?(?=\")", imgElement, "images/" + fileName, false);
 		final ImageEntry img = new ImageEntry(fileName, url, page.getImgDir() + fileName);
 		FutureTask<Boolean> task = new FutureTask<>(new Callable<Boolean>() {
@@ -123,7 +119,7 @@ public class MobiCreator {
 					HttpHelper.download(img.getDownloadUrl(), GlobalConfig.DOWNLOAD_TIMEOUT, os);
 					LOGGER.debug("downloaded image:" + img.toString());
 				} catch (Exception e) {
-					LOGGER.error("download image error:" + img.getDownloadUrl(),e);
+					LOGGER.error("download image error:" + img.getDownloadUrl(), e);
 				}
 				return true;
 			}
@@ -143,11 +139,16 @@ public class MobiCreator {
 		}
 	}
 
-	private String getFileName(String url) {
+	private String getImageFileName(String url) {
 		int index = url.lastIndexOf("/");
+		String fileName = "";
 		if (index != -1) {
-			return url.substring(index + 1);
+			fileName = url.substring(index + 1);
 		}
-		return "";
+		index = fileName.indexOf("?");
+		if (index != -1) {
+			fileName = fileName.substring(0, index);
+		}
+		return fileName;
 	}
 }
