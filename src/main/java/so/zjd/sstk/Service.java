@@ -13,6 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import so.zjd.sstk.util.MailSender;
+
 public class Service implements AutoCloseable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
 
@@ -30,7 +32,8 @@ public class Service implements AutoCloseable {
 					try (PageEntry page = new PageEntry(url)) {
 						LOGGER.debug(page.toString());
 						try {
-							new MobiCreator(imgDownloaderService, page).create();
+							new MobiGenerator(imgDownloaderService, page).handle();
+							sendToKindle(page);
 						} catch (Throwable e) {
 							LOGGER.error("mobi create error. title:" + page.getTitle(), e);
 						}
@@ -42,6 +45,16 @@ public class Service implements AutoCloseable {
 			pageService.submit(task);
 		}
 		waitServiceCompleted(tasks);
+	}
+	
+
+	private void sendToKindle(PageEntry page) {
+		if (!GlobalConfig.DEBUG_SEND_MAIL) {
+			return;
+		}
+		MailSender mailSender = new MailSender(GlobalConfig.CONFIGS);
+		mailSender.sendFrom(page.getTitle(), page.getMobiFilePath());
+		LOGGER.debug("sended mobi file to：" + GlobalConfig.CONFIGS.getProperty("mail.to"));
 	}
 
 	private void waitServiceCompleted(List<FutureTask<Boolean>> tasks) {

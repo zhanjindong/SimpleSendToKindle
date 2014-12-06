@@ -21,6 +21,8 @@ public class GlobalConfig {
 	public static int DOWNLOAD_TIMEOUT = 0;
 	public static boolean DELETE_TEMP_DIR = false;
 
+	public static boolean DEBUG_SEND_MAIL = false;
+
 	static {
 		try {
 			DOMConfigurator.configure(PathUtils.getRealPath("classpath:log4j.xml"));
@@ -29,6 +31,7 @@ public class GlobalConfig {
 			SERVICE_TIMEOUT = Integer.valueOf(CONFIGS.getProperty("sstk.service.timeout"));
 			DOWNLOAD_TIMEOUT = Integer.valueOf(CONFIGS.getProperty("sstk.download.timeout"));
 			DELETE_TEMP_DIR = Boolean.valueOf(CONFIGS.getProperty("sstk.download.deleteTmpDir"));
+			DEBUG_SEND_MAIL = Boolean.valueOf(CONFIGS.getProperty("sstk.debug.sendMail"));
 
 		} catch (Exception e) {
 			LOGGER.error("static init error.", e);

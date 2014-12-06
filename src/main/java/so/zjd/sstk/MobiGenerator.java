@@ -16,13 +16,12 @@ import org.slf4j.LoggerFactory;
 
 import so.zjd.sstk.util.HttpHelper;
 import so.zjd.sstk.util.IOUtils;
-import so.zjd.sstk.util.MailSender;
 import so.zjd.sstk.util.PathUtils;
 import so.zjd.sstk.util.RegexUtils;
 
-public class MobiCreator {
+public class MobiGenerator {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MobiCreator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(MobiGenerator.class);
 	private static final char[] IMG_START_TAG = new char[] { '<', 'i', 'm', 'g' };
 	private static final char[] IMG_END_TAG = new char[] { '/', '>' };
 
@@ -32,12 +31,12 @@ public class MobiCreator {
 	private PageEntry page;
 	private int index = 0;
 
-	public MobiCreator(ExecutorService service, PageEntry page) {
+	public MobiGenerator(ExecutorService service, PageEntry page) {
 		this.downloaders = service;
 		this.page = page;
 	}
 
-	public void create() throws InterruptedException, IOException, URISyntaxException {
+	public void handle() throws InterruptedException, IOException, URISyntaxException {
 		processImages(page);
 		waitDownloadCompleted();
 		generateMobiFile(page);
@@ -53,16 +52,9 @@ public class MobiCreator {
 			// process.waitFor();
 			String result = new String(IOUtils.read(process.getInputStream()));
 			LOGGER.debug("kindlegen output info:" + result);
-			sendToKindle(page);
 		} catch (Exception e) {
 			LOGGER.error("kindlegen error.", e);
 		}
-	}
-
-	private void sendToKindle(PageEntry page) {
-		MailSender mailSender = new MailSender(GlobalConfig.CONFIGS);
-		mailSender.sendFrom(page.getTitle(), page.getMobiFilePath());
-		LOGGER.debug("sended mobi file to：" + GlobalConfig.CONFIGS.getProperty("mail.to"));
 	}
 
 	protected void processImages(PageEntry page) {
