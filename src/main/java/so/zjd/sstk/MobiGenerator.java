@@ -37,7 +37,7 @@ public class MobiGenerator {
 	private List<FutureTask<Boolean>> futureTasks = new ArrayList<>();
 
 	private PageEntry page;
-	private int resIndex = 0;
+	private int imgIndex = 0;
 	private int linkIndex = 0;
 
 	public MobiGenerator(ExecutorService service, PageEntry page) {
@@ -72,49 +72,51 @@ public class MobiGenerator {
 		StringBuilder content = page.getContent();
 		for (int i = 0; i < content.length(); i++) {
 			char c = content.charAt(i);
-			if (linkIndex < 5 && c == LINK_START_TAG[linkIndex]) {
-				linkIndex++;
+			// if (linkIndex < 5 && c == LINK_START_TAG[linkIndex]) {
+			// linkIndex++;
+			// } else {
+			// linkIndex = 0;
+			// }
+			if (imgIndex < 4 && c == IMG_START_TAG[imgIndex]) {
+				imgIndex++;
 			} else {
-				linkIndex = 0;
+				imgIndex = 0;
 			}
-			if (resIndex < 4 && c == IMG_START_TAG[resIndex]) {
-				resIndex++;
-			} else {
-				resIndex = 0;
-			}
-			if (linkIndex == 5) {// <link
-				processed.delete(processed.length() - 4, processed.length());
-				element.append("<link");
-				linkIndex = 0;
-				while (i < content.length() - 1) {
-					c = content.charAt(++i);
-					element.append(c);
-					if (linkIndex < 2 && c == END_TAG[linkIndex]) {
-						linkIndex++;
-					} else {
-						linkIndex = 0;
-					}
-					if (linkIndex == 2) {
-						linkIndex = 0;
-						break;
-					}
-				}
-				processed.append(downloadResource(element.toString(), 1));
-				element.delete(0, element.length());
-			} else if (resIndex == 4) {// <img
+			// 因为保留CSS会导致生成的页面在Kindle上展示错乱，所以就不下载了。
+			// if (linkIndex == 5) {// <link
+			// processed.delete(processed.length() - 4, processed.length());
+			// element.append("<link");
+			// linkIndex = 0;
+			// while (i < content.length() - 1) {
+			// c = content.charAt(++i);
+			// element.append(c);
+			// if (linkIndex < 2 && c == END_TAG[linkIndex]) {
+			// linkIndex++;
+			// } else {
+			// linkIndex = 0;
+			// }
+			// if (linkIndex == 2) {
+			// linkIndex = 0;
+			// break;
+			// }
+			// }
+			// processed.append(downloadResource(element.toString(), 1));
+			// element.delete(0, element.length());
+			// } else
+			if (imgIndex == 4) {// <img
 				processed.delete(processed.length() - 3, processed.length());
 				element.append("<img");
-				resIndex = 0;
+				imgIndex = 0;
 				while (i < content.length() - 1) {
 					c = content.charAt(++i);
 					element.append(c);
-					if (resIndex < 2 && c == END_TAG[resIndex]) {
-						resIndex++;
+					if (imgIndex < 2 && c == END_TAG[imgIndex]) {
+						imgIndex++;
 					} else {
-						resIndex = 0;
+						imgIndex = 0;
 					}
-					if (resIndex == 2) {
-						resIndex = 0;
+					if (imgIndex == 2) {
+						imgIndex = 0;
 						break;
 					}
 				}
@@ -181,9 +183,9 @@ public class MobiGenerator {
 			int index = pageUrl.lastIndexOf("/");
 			pageUrl = pageUrl.substring(0, index + 1);
 		}
-		resIndex = url.indexOf("/");
-		if (resIndex != -1) {
-			url = url.substring(resIndex + 1);
+		imgIndex = url.indexOf("/");
+		if (imgIndex != -1) {
+			url = url.substring(imgIndex + 1);
 		}
 		url = pageUrl + url;
 
