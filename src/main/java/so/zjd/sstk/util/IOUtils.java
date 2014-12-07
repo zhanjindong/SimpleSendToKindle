@@ -211,10 +211,10 @@ public final class IOUtils {
 	 */
 	public static void write(File file, String content, boolean append) throws IOException {
 
-		FileWriterWithEncoding fileWriter = null;
+		FileWriter fileWriter = null;
 		try {
 
-			fileWriter = new FileWriterWithEncoding(file, "UTF-8", append);
+			fileWriter = new FileWriter(file, append);
 			fileWriter.write(content);
 		} finally {
 			close(fileWriter);

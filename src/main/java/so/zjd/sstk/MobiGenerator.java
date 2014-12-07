@@ -79,7 +79,7 @@ public class MobiGenerator {
 				processed.delete(processed.length() - 3, processed.length());
 				imgElement.append("<img");
 				index = 0;
-				while (true) {
+				while (i < content.length() - 1) {
 					c = content.charAt(++i);
 					imgElement.append(c);
 					if (index < 2 && c == IMG_END_TAG[index]) {
@@ -97,8 +97,8 @@ public class MobiGenerator {
 			} else {
 				processed.append(c);
 			}
-			page.setContent(processed);
 		}
+		page.setContent(processed);
 	}
 
 	private String downloadImage(String imgElement) {

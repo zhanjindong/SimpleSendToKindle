@@ -72,6 +72,9 @@ public class HttpHelper {
 		urlConnection.setReadTimeout(timeout);
 		urlConnection.setConnectTimeout(timeout);
 
+		//模拟浏览器User-Agent
+		urlConnection.addRequestProperty("User-Agent","Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36");
+		
 		urlConnection.setRequestMethod(method); // request method, default
 												// GET
 		if (method.equals("POST")) {
