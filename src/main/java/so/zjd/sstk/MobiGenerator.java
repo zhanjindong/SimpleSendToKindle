@@ -30,7 +30,8 @@ public class MobiGenerator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MobiGenerator.class);
 	private static final char[] IMG_START_TAG = new char[] { '<', 'i', 'm', 'g' };
-	private static final char[] IMG_END_TAG = new char[] { '/', '>' };
+	private static final char[] CSS_START_TAG = new char[] { '<', 'l', 'i', 'n', 'k' };
+	private static final char[] END_TAG = new char[] { '/', '>' };
 
 	private ExecutorService downloaders;
 	private List<FutureTask<Boolean>> futureTasks = new ArrayList<>();
@@ -44,7 +45,7 @@ public class MobiGenerator {
 	}
 
 	public void handle() throws InterruptedException, IOException, URISyntaxException {
-		processImages(page);
+		processResources(page);
 		waitDownloadCompleted();
 		generateMobiFile(page);
 	}
@@ -64,7 +65,7 @@ public class MobiGenerator {
 		}
 	}
 
-	protected void processImages(PageEntry page) {
+	protected void processResources(PageEntry page) {
 		StringBuilder processed = new StringBuilder();
 		StringBuilder imgElement = new StringBuilder();
 		StringBuilder content = page.getContent();
@@ -75,6 +76,7 @@ public class MobiGenerator {
 			} else {
 				index = 0;
 			}
+			//<img
 			if (index == 4) {
 				processed.delete(processed.length() - 3, processed.length());
 				imgElement.append("<img");
@@ -82,7 +84,7 @@ public class MobiGenerator {
 				while (i < content.length() - 1) {
 					c = content.charAt(++i);
 					imgElement.append(c);
-					if (index < 2 && c == IMG_END_TAG[index]) {
+					if (index < 2 && c == END_TAG[index]) {
 						index++;
 					} else {
 						index = 0;
@@ -108,7 +110,8 @@ public class MobiGenerator {
 		}
 		String url = processRelativeImageUrl(matchs.get(0));
 		final String fileName = getImageFileName(url);
-		final String result = RegexUtils.replaceAll("(?<=src=\").*?(?=\")", imgElement, "images/" + fileName, false);
+		final String result = RegexUtils.replaceAll("(?<=src=\").*?(?=\")", imgElement, GlobalConfig.RESOURCE_DIR_NAME
+				+ "/" + fileName, false);
 		final ImageEntry img = new ImageEntry(fileName, url, page.getImgDir() + fileName);
 		FutureTask<Boolean> task = new FutureTask<>(new Callable<Boolean>() {
 			@Override

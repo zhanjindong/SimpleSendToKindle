@@ -25,7 +25,7 @@ public class PageEntry implements AutoCloseable {
 	private StringBuilder content;
 	private String title;
 	private String tmpDir;
-	private String imgDir;
+	private String resourceDir;
 	private String savePath;
 	private String mobiFilePath;
 
@@ -43,13 +43,14 @@ public class PageEntry implements AutoCloseable {
 			}
 
 			this.tmpDir = GlobalConfig.BASE_TEMP_DIR + GlobalConfig.SLASH + normalizePath(url);
-			this.imgDir = tmpDir + GlobalConfig.SLASH + "images" + GlobalConfig.SLASH;
+			this.resourceDir = tmpDir + GlobalConfig.SLASH + GlobalConfig.RESOURCE_DIR_NAME + GlobalConfig.SLASH;
 			path = Paths.get(tmpDir);
 			if (Files.exists(path)) {
 				delete(path);
 			}
 			Files.createDirectory(path);
-			path = new File(GlobalConfig.BASE_TEMP_DIR + GlobalConfig.SLASH + normalizePath(url) + "/images").toPath();
+			path = new File(GlobalConfig.BASE_TEMP_DIR + GlobalConfig.SLASH + normalizePath(url) + GlobalConfig.SLASH
+					+ GlobalConfig.RESOURCE_DIR_NAME).toPath();
 			Files.createDirectory(path);
 
 			String tmpTitle = RegexUtils.findAll("(?<=<title>).*?(?=</title>)", this.content.toString(), false).get(0);
@@ -114,11 +115,11 @@ public class PageEntry implements AutoCloseable {
 	}
 
 	public String getImgDir() {
-		return imgDir;
+		return resourceDir;
 	}
 
 	public void setImgDir(String imgDir) {
-		this.imgDir = imgDir;
+		this.resourceDir = imgDir;
 	}
 
 	public String getSavePath() {

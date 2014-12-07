@@ -27,12 +27,12 @@ public class Service implements AutoCloseable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(Service.class);
 
 	private ExecutorService pageService;
-	private ExecutorService imageDownloadService;
+	private ExecutorService resourcDownloadService;
 
 	public void launch(String[] urls) throws InterruptedException {
 		LOGGER.debug("Service startup. urls：" + Arrays.toString(urls));
 		pageService = Executors.newFixedThreadPool(urls.length);
-		imageDownloadService = Executors.newFixedThreadPool(urls.length * 2);
+		resourcDownloadService = Executors.newFixedThreadPool(urls.length * 2);
 		List<FutureTask<Boolean>> tasks = new ArrayList<>(urls.length);
 		for (final String url : urls) {
 			FutureTask<Boolean> task = new FutureTask<>(new Callable<Boolean>() {
@@ -41,7 +41,7 @@ public class Service implements AutoCloseable {
 					try (PageEntry page = new PageEntry(url)) {
 						LOGGER.debug(page.toString());
 						try {
-							new MobiGenerator(imageDownloadService, page).handle();
+							new MobiGenerator(resourcDownloadService, page).handle();
 							sendToKindle(page);
 						} catch (Throwable e) {
 							LOGGER.error("mobi create error. title:" + page.getTitle(), e);
@@ -77,8 +77,8 @@ public class Service implements AutoCloseable {
 
 	@Override
 	public void close() throws Exception {
-		imageDownloadService.shutdown();
-		imageDownloadService.awaitTermination(GlobalConfig.SERVICE_TIMEOUT, TimeUnit.MILLISECONDS);
+		resourcDownloadService.shutdown();
+		resourcDownloadService.awaitTermination(GlobalConfig.SERVICE_TIMEOUT, TimeUnit.MILLISECONDS);
 		pageService.shutdown();
 		pageService.awaitTermination(GlobalConfig.SERVICE_TIMEOUT, TimeUnit.MILLISECONDS);
 		LOGGER.debug("Service stoped.");
