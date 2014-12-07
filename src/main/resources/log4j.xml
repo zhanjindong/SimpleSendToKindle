@@ -10,32 +10,16 @@
 		</layout>
 	</appender>
 
-	<appender name="DebugAppender" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="D://temp/debug.log" />
+	<appender name="LogAppender" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="D://temp/log.log" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%m%n" />
 		</layout>
-		<filter class="org.apache.log4j.varia.LevelRangeFilter">
-			<param name="LevelMin" value="debug" />
-			<param name="LevelMax" value="debug" />
-		</filter>
-	</appender>
-
-	<appender name="ErrorAppender" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="D://temp/error.log" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%m%n" />
-		</layout>
-		<filter class="org.apache.log4j.varia.LevelRangeFilter">
-			<param name="LevelMin" value="error" />
-			<param name="LevelMax" value="fatal" />
-		</filter>
 	</appender>
 
 	<root>
 		<level value="DEBUG" />
 		<appender-ref ref="ConsoleAppender" />
-		<appender-ref ref="DebugAppender" />
-		<appender-ref ref="ErrorAppender" />
+		<appender-ref ref="LogAppender" />
 	</root>
 </log4j:configuration>
