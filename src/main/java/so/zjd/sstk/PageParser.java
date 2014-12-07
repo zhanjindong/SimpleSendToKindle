@@ -15,20 +15,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import so.zjd.sstk.util.HttpHelper;
-import so.zjd.sstk.util.IOUtils;
-import so.zjd.sstk.util.PathUtils;
 import so.zjd.sstk.util.RegexUtils;
 
 /**
  * 
- * Kindle .mobi file Generator.
+ * Parse page and download resources.
  * 
  * @author jdzhan,2014-12-6
  * 
  */
-public class MobiGenerator {
+public class PageParser {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MobiGenerator.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PageParser.class);
 	private static final char[] IMG_START_TAG = new char[] { '<', 'i', 'm', 'g' };
 	private static final char[] LINK_START_TAG = new char[] { '<', 'l', 'i', 'n', 'k' };
 	private static final char[] END_TAG = new char[] { '/', '>' };
@@ -40,30 +38,15 @@ public class MobiGenerator {
 	private int imgIndex = 0;
 	private int linkIndex = 0;
 
-	public MobiGenerator(ExecutorService service, PageEntry page) {
+	public PageParser(ExecutorService service, PageEntry page) {
 		this.downloaders = service;
 		this.page = page;
 	}
 
-	public void handle() throws InterruptedException, IOException, URISyntaxException {
+	public void parse() throws InterruptedException, IOException, URISyntaxException {
 		processResources(page);
 		waitDownloadCompleted();
-		generateMobiFile(page);
-	}
-
-	private void generateMobiFile(PageEntry page) throws IOException, URISyntaxException {
 		page.save();
-		String kindlegenPath = PathUtils.getRealPath("classpath:bin/kindlegen.exe");
-		String cmdStr = String.format(kindlegenPath + " %s -c1 -locale zh", page.getSavePath());
-		Process process;
-		process = Runtime.getRuntime().exec(cmdStr);
-		try {
-			// process.waitFor();
-			String result = new String(IOUtils.read(process.getInputStream()));
-			LOGGER.debug("kindlegen output info:" + result);
-		} catch (Exception e) {
-			LOGGER.error("kindlegen error.", e);
-		}
 	}
 
 	protected void processResources(PageEntry page) {
