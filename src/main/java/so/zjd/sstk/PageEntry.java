@@ -114,11 +114,11 @@ public class PageEntry implements AutoCloseable {
 		}
 	}
 
-	public String getImgDir() {
+	public String getResourceDir() {
 		return resourceDir;
 	}
 
-	public void setImgDir(String imgDir) {
+	public void setResourceDir(String imgDir) {
 		this.resourceDir = imgDir;
 	}
 

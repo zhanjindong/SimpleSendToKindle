@@ -30,14 +30,15 @@ public class MobiGenerator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MobiGenerator.class);
 	private static final char[] IMG_START_TAG = new char[] { '<', 'i', 'm', 'g' };
-	private static final char[] CSS_START_TAG = new char[] { '<', 'l', 'i', 'n', 'k' };
+	private static final char[] LINK_START_TAG = new char[] { '<', 'l', 'i', 'n', 'k' };
 	private static final char[] END_TAG = new char[] { '/', '>' };
 
 	private ExecutorService downloaders;
 	private List<FutureTask<Boolean>> futureTasks = new ArrayList<>();
 
 	private PageEntry page;
-	private int index = 0;
+	private int resIndex = 0;
+	private int linkIndex = 0;
 
 	public MobiGenerator(ExecutorService service, PageEntry page) {
 		this.downloaders = service;
@@ -67,35 +68,58 @@ public class MobiGenerator {
 
 	protected void processResources(PageEntry page) {
 		StringBuilder processed = new StringBuilder();
-		StringBuilder imgElement = new StringBuilder();
+		StringBuilder element = new StringBuilder();
 		StringBuilder content = page.getContent();
 		for (int i = 0; i < content.length(); i++) {
 			char c = content.charAt(i);
-			if (index < 4 && c == IMG_START_TAG[index]) {
-				index++;
+			if (linkIndex < 5 && c == LINK_START_TAG[linkIndex]) {
+				linkIndex++;
 			} else {
-				index = 0;
+				linkIndex = 0;
 			}
-			//<img
-			if (index == 4) {
-				processed.delete(processed.length() - 3, processed.length());
-				imgElement.append("<img");
-				index = 0;
+			if (resIndex < 4 && c == IMG_START_TAG[resIndex]) {
+				resIndex++;
+			} else {
+				resIndex = 0;
+			}
+			if (linkIndex == 5) {// <link
+				processed.delete(processed.length() - 4, processed.length());
+				element.append("<link");
+				linkIndex = 0;
 				while (i < content.length() - 1) {
 					c = content.charAt(++i);
-					imgElement.append(c);
-					if (index < 2 && c == END_TAG[index]) {
-						index++;
+					element.append(c);
+					if (linkIndex < 2 && c == END_TAG[linkIndex]) {
+						linkIndex++;
 					} else {
-						index = 0;
+						linkIndex = 0;
 					}
-					if (index == 2) {
-						index = 0;
+					if (linkIndex == 2) {
+						linkIndex = 0;
 						break;
 					}
 				}
-				processed.append(downloadImage(imgElement.toString()));
-				imgElement.delete(0, imgElement.length());
+				processed.append(downloadResource(element.toString(), 1));
+				element.delete(0, element.length());
+			} else if (resIndex == 4) {// <img
+				processed.delete(processed.length() - 3, processed.length());
+				element.append("<img");
+				resIndex = 0;
+				while (i < content.length() - 1) {
+					c = content.charAt(++i);
+					element.append(c);
+					if (resIndex < 2 && c == END_TAG[resIndex]) {
+						resIndex++;
+					} else {
+						resIndex = 0;
+					}
+					if (resIndex == 2) {
+						resIndex = 0;
+						break;
+					}
+				}
+				processed.append(downloadResource(element.toString(), 0));
+				element.delete(0, element.length());
 			} else {
 				processed.append(c);
 			}
@@ -103,24 +127,35 @@ public class MobiGenerator {
 		page.setContent(processed);
 	}
 
-	private String downloadImage(String imgElement) {
-		List<String> matchs = RegexUtils.findAll("(?<=src=\").*?(?=\")", imgElement, false);
-		if (matchs.isEmpty()) {
-			return imgElement;
+	// 0:<img
+	// 1:<link
+	private String downloadResource(String element, int type) {
+		String pattern = "";
+		if (type == 0) {
+			pattern = "(?<=src=\").*?(?=\")";
+		} else if (type == 1) {
+			pattern = "(?<=href=\").*?(?=\")";
+		} else {
+			return element;
 		}
-		String url = processRelativeImageUrl(matchs.get(0));
-		final String fileName = getImageFileName(url);
-		final String result = RegexUtils.replaceAll("(?<=src=\").*?(?=\")", imgElement, GlobalConfig.RESOURCE_DIR_NAME
-				+ "/" + fileName, false);
-		final ImageEntry img = new ImageEntry(fileName, url, page.getImgDir() + fileName);
+
+		List<String> matchs = RegexUtils.findAll(pattern, element, false);
+		if (matchs.isEmpty()) {
+			return element;
+		}
+		String url = processRelativeUrl(matchs.get(0));
+		final String fileName = getFileName(url);
+		final String result = RegexUtils.replaceAll(pattern, element, GlobalConfig.RESOURCE_DIR_NAME + "/" + fileName,
+				false);
+		final ResourceEntry res = new ResourceEntry(fileName, url, page.getResourceDir() + fileName);
 		FutureTask<Boolean> task = new FutureTask<>(new Callable<Boolean>() {
 			@Override
 			public Boolean call() throws Exception {
-				try (OutputStream os = new FileOutputStream(img.getSavePath())) {
-					HttpHelper.download(img.getDownloadUrl(), GlobalConfig.DOWNLOAD_TIMEOUT, os);
-					LOGGER.debug("downloaded image:" + img.toString());
+				try (OutputStream os = new FileOutputStream(res.getSavePath())) {
+					HttpHelper.download(res.getDownloadUrl(), GlobalConfig.DOWNLOAD_TIMEOUT, os);
+					LOGGER.debug("downloaded resource:" + res.toString());
 				} catch (Exception e) {
-					LOGGER.error("download image error:" + img.getDownloadUrl(), e);
+					LOGGER.error("download resource error:" + res.getDownloadUrl(), e);
 				}
 				return true;
 			}
@@ -133,7 +168,7 @@ public class MobiGenerator {
 	// ./images/mem/figure9.png
 	// images/mem/figure9.png
 	// /images/mem/figure9.png
-	private String processRelativeImageUrl(String url) {
+	private String processRelativeUrl(String url) {
 		if (url.startsWith("http://")) {
 			return url;
 		}
@@ -146,9 +181,9 @@ public class MobiGenerator {
 			int index = pageUrl.lastIndexOf("/");
 			pageUrl = pageUrl.substring(0, index + 1);
 		}
-		index = url.indexOf("/");
-		if (index != -1) {
-			url = url.substring(index + 1);
+		resIndex = url.indexOf("/");
+		if (resIndex != -1) {
+			url = url.substring(resIndex + 1);
 		}
 		url = pageUrl + url;
 
@@ -165,7 +200,7 @@ public class MobiGenerator {
 		}
 	}
 
-	private String getImageFileName(String url) {
+	private String getFileName(String url) {
 		int index = url.lastIndexOf("/");
 		String fileName = "";
 		if (index != -1) {

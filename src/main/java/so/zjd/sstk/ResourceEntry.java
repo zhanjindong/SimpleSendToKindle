@@ -5,12 +5,12 @@ import java.util.List;
 
 /**
  * 
- * Represents of image element.
+ * Represents of image or link element.
  * 
  * @author jdzhan,2014-12-6
  * 
  */
-public class ImageEntry {
+public class ResourceEntry {
 	private String downloadUrl;
 	private String savePath;
 	private String fileName;
@@ -25,7 +25,7 @@ public class ImageEntry {
 		supportedImgFormats.add(".BMP");
 	}
 
-	public ImageEntry(String fileName, String downloadUrl, String savePath) {
+	public ResourceEntry(String fileName, String downloadUrl, String savePath) {
 		this.fileName = fileName;
 		this.downloadUrl = downloadUrl;
 		this.savePath = savePath;
@@ -57,6 +57,6 @@ public class ImageEntry {
 
 	@Override
 	public String toString() {
-		return "ImageEntry [downloadUrl=" + downloadUrl + ", savePath=" + savePath + "]";
+		return "ResourceEntry [downloadUrl=" + downloadUrl + ", savePath=" + savePath + "]";
 	}
 }
