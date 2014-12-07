@@ -110,13 +110,8 @@ public class Service implements AutoCloseable {
 	}
 
 	public static void main(String[] args) {
-		String url = "";
 		if (args.length == 0) {
 			usage();
-			return;
-		}
-		url = args[0];
-		if (StringUtils.isEmpty(url)) {
 			return;
 		}
 		try (Service service = new Service()) {
