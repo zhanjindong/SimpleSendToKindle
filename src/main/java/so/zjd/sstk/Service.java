@@ -107,6 +107,7 @@ public class Service implements AutoCloseable {
 	public static void usage() {
 		String usage = "Usage:java -Dfile.encoding=utf-8 -jar SimpleSendToKindle.jar http://xxx1.xxx.xx http:xxx2.xxx.xx ...";
 		LOGGER.debug(usage);
+		System.out.println("Missing parameter.");
 	}
 
 	public static void main(String[] args) {
@@ -116,8 +117,10 @@ public class Service implements AutoCloseable {
 		}
 		try (Service service = new Service()) {
 			service.launch(args);
+			System.out.println("Successed!");
 		} catch (Throwable e) {
 			LOGGER.error("Service error.", e);
+			System.out.println("Error.");
 		}
 	}
 
