@@ -11,7 +11,7 @@
 	</appender>
 
 	<appender name="LogAppender" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="File" value="D://temp/log.log" />
+		<param name="File" value="logs/log.log" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%m%n" />
 		</layout>
@@ -19,7 +19,7 @@
 
 	<root>
 		<level value="DEBUG" />
-		<appender-ref ref="ConsoleAppender" />
+		<!-- <appender-ref ref="ConsoleAppender" /> -->
 		<appender-ref ref="LogAppender" />
 	</root>
 </log4j:configuration>

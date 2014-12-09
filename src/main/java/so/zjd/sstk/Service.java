@@ -104,10 +104,14 @@ public class Service implements AutoCloseable {
 		LOGGER.debug("Service stoped.");
 	}
 
-	public static void usage() {
+	private static void usage() {
 		String usage = "Usage:java -Dfile.encoding=utf-8 -jar SimpleSendToKindle.jar http://xxx1.xxx.xx http:xxx2.xxx.xx ...";
 		LOGGER.debug(usage);
-		System.out.println("Missing parameter.");
+		report("Missing parameter.");
+	}
+
+	private static void report(String msg) {
+		System.out.println(msg);// write to standard output
 	}
 
 	public static void main(String[] args) {
@@ -117,10 +121,10 @@ public class Service implements AutoCloseable {
 		}
 		try (Service service = new Service()) {
 			service.launch(args);
-			System.out.println("Successed!");
+			report("Successed!");
 		} catch (Throwable e) {
 			LOGGER.error("Service error.", e);
-			System.out.println("Error.");
+			report("Error!");
 		}
 	}
 
