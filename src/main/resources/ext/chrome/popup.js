@@ -3,7 +3,8 @@ var nativeHostName = "so.zjd.sstk";
 port = chrome.runtime.connectNative(nativeHostName);
 
 port.onMessage.addListener(function(msg) { 
-   console.log("Received " + msg); 
+	alert("Received " + msg);
+    console.log("Received " + msg); 
 });
 
 port.onDisconnect.addListener(function onDisconnected(){
@@ -11,8 +12,6 @@ port.onDisconnect.addListener(function onDisconnected(){
 	port = null;
 });
  
-port.postMessage("D:\\chrome\\test.html") 
-
-
+port.postMessage(encodeURI("http://www.cnblogs.com/michaelxu/archive/2007/05/14/745881.html")) 
 
 

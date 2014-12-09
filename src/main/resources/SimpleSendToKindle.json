@@ -1,11 +1,10 @@
 {
 	"name":"so.zjd.sstk",
 	"description":"Simple Send to Kindle(by zjd.so)",
-	//C:\\Windows\\System32\\calc.exe 绝对路径必须两个斜杠
-	"path":"startup.bat",
+	"path":"startup.exe",//如果有必须用双引号
 	"type":"stdio",
 	"allowed_origins":[
-		"chrome-extension://aojambfhcbcpfkdjfcdghfimonppcocl/"
+		"chrome-extension://jnihbngmnjbmchfhcdfabofamnfcljaf/"
 
 	]
 }

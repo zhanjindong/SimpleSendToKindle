@@ -4,13 +4,14 @@
 	<formats>
 		<format>dir</format>
 	</formats>
-	<includeBaseDirectory>true</includeBaseDirectory>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<includeSiteDirectory>SimpleSendToKindle</includeSiteDirectory>
 	<fileSets>
 		<fileSet>
 			<directory>src/main/resources/bin</directory>
 			<outputDirectory>bin</outputDirectory>
 		</fileSet>
-			<fileSet>
+		<fileSet>
 			<directory>src/main/resources/ext/chrome</directory>
 			<outputDirectory>ext/chrome</outputDirectory>
 		</fileSet>
@@ -23,10 +24,6 @@
 			<outputDirectory>chrome</outputDirectory>
 		</fileSet>
 	</fileSets>
-	<dependencySets>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<scope>runtime</scope>
-		</dependencySet>
-	</dependencySets>
+	<!-- <dependencySets> <dependencySet> <useProjectArtifact>false</useProjectArtifact> 
+		</dependencySet> </dependencySets> -->
 </assembly>

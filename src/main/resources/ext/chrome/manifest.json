@@ -8,7 +8,7 @@
 			"19": "cnblogs_19.png",
 			"38": "cnblogs_38.png"
 		},
-		"default_title": "zjd kindle push", // shown in tooltip
+		"default_title": "Simple Send to Kindle (by zjd.so)", // shown in tooltip
 		"default_popup": "popup.html"
 	},
 	"permissions" : ["tabs","http://localhost/","nativeMessaging"],
