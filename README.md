@@ -14,6 +14,5 @@ Dependency
 - JRE SimpleSendToKindle.jar运行以来Java运行环境
 - maven
 - Chrome 支持`Native Messaging`的Chrome版本
-- .NET Framework 3.5+ startup.exe是用C#开发
 
 ### How to use
