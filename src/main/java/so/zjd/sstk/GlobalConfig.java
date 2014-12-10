@@ -1,3 +1,6 @@
+/**
+ *  Copyright (c) 2014 zhanjindong. All rights reserved.
+ */
 package so.zjd.sstk;
 
 import java.io.FileInputStream;

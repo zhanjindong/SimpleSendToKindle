@@ -1,9 +1,6 @@
-/*
- * Create Author  : chen.chen.9
- * Create Date    : 2014-3-19
- * File Name      : ResourceConstants.java
+/**
+ *  Copyright (c) 2014 zhanjindong. All rights reserved.
  */
-
 package so.zjd.sstk.util;
 
 public enum ResourceConstants {
