@@ -4,8 +4,8 @@
 	"version": "0.0.1",
 	"browser_action": {
 		"default_icon": {
-			"19": "cnblogs_19.png",
-			"38": "cnblogs_38.png"
+			"19": "logo.png",
+			"38": "logo.png"
 		},
 		"default_title": "Simple Send to Kindle (by zjd.so)", // shown in tooltip
 		"default_popup": "popup.html"

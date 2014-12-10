@@ -5,13 +5,13 @@ chrome.tabs.getSelected(null,function(tab) {
 
 	port.onMessage.addListener(function(msg) { 
 		//console.log("Received " + msg); 
-		$("#message").text(msg);
+		$("#message").text(msg.text);
 	});
 
 	port.onDisconnect.addListener(function onDisconnected(){
 		//console.log("connetct native host failure:" + chrome.runtime.lastError.message);
 		port = null;
-		$("#message").text("Finished!");
+		//$("#message").text("Finished!");
 	});
 	 
 	port.postMessage(encodeURI(tab.url)) 

@@ -1,6 +1,8 @@
 package so.zjd.sstk;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,7 +113,12 @@ public class Service implements AutoCloseable {
 	}
 
 	private static void report(String msg) {
-		System.out.println(msg);// write to standard output
+		OutputStream stdout = System.out;
+		try {
+			stdout.write(msg.getBytes("UTF-8"));
+		} catch (IOException e) {
+			LOGGER.error("write msg to standard io error.", e);
+		}
 	}
 
 	public static void main(String[] args) {
