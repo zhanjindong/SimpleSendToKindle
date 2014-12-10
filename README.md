@@ -13,7 +13,7 @@ Dependency
 - setup.bat 该脚本用来添加Chrome和本地应用程序通信用到的注册表项
 - JRE
 - maven
-- Chrome 支持`Native Messaging`的Chrome版本
+- chrome 支持`Native Messaging`的chrome版本
 
 ### How to use
 
