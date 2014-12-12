@@ -156,24 +156,47 @@ public class PageParser {
 	// ./images/mem/figure9.png
 	// images/mem/figure9.png
 	// /images/mem/figure9.png
+	// ../../images/mem/figure9.png
 	private String processRelativeUrl(String url) {
 		if (url.startsWith("http://")) {
 			return url;
 		}
-		String pageUrl = page.getUrl();
-
+		String pageUrl = this.page.getUrl();
+		int relative = 0;
+		int index = 0;
 		if (url.startsWith("/")) {
-			int index = pageUrl.indexOf('/', 7);
-			pageUrl = pageUrl.substring(0, index + 1);
+			relative = -1;
 		} else {
-			int index = pageUrl.lastIndexOf("/");
-			pageUrl = pageUrl.substring(0, index + 1);
+			while (true) {
+				index = 0;
+				if (url.startsWith("./")) {// 当前目录
+					index = url.indexOf("./");
+					url = url.substring(index + 2);
+					continue;
+				} else if (url.startsWith("../")) {// 上级目录
+					relative++;
+					index = url.indexOf("../");
+					url = url.substring(index + 3);
+					continue;
+				} else {// 当前目录
+					break;
+				}
+			}
 		}
-		imgIndex = url.indexOf("/");
-		if (imgIndex != -1) {
-			url = url.substring(imgIndex + 1);
+		if (relative == -1) {
+			index = pageUrl.indexOf('/', 7);
+			pageUrl = pageUrl.substring(0, index);
+			url = url.substring(1);
+		} else {
+			for (int i = 0; i <= relative; i++) {
+				index = pageUrl.lastIndexOf("/");
+				if (index == -1) {
+					break;
+				}
+				pageUrl = pageUrl.substring(0, index);
+			}
 		}
-		url = pageUrl + url;
+		url = pageUrl + "/" + url;
 
 		return url;
 	}
