@@ -17,4 +17,4 @@ Dependency
 
 ### How to use
 
-见我写的这篇博客。
+见我写的这篇博客：http://www.cnblogs.com/magialmoon/p/simple-send-to-kindle.html
