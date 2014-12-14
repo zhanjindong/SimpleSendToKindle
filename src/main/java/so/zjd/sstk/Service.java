@@ -131,7 +131,7 @@ public class Service implements AutoCloseable {
 			report("Successed!");
 		} catch (Throwable e) {
 			LOGGER.error("Service error.", e);
-			report("Error!");
+			report("Error occurred!");
 		}
 	}
 
