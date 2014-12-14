@@ -70,7 +70,7 @@ public class Service implements AutoCloseable {
 			String result = new String(IOUtils.read(process.getInputStream()));
 			LOGGER.debug("kindlegen output info:" + result);
 		} catch (Exception e) {
-			LOGGER.error("kindlegen error.", e);
+			throw new SstkException("kindlegen error.", e);
 		}
 	}
 
@@ -83,9 +83,8 @@ public class Service implements AutoCloseable {
 			mailSender.sendFrom(page.getTitle(), page.getMobiFilePath());
 			LOGGER.debug("sended mobi file to：" + GlobalConfig.CONFIGS.getProperty("mail.to"));
 		} catch (Exception e) {
-			LOGGER.error("send mail error.", e);
+			throw new SstkException("send mail error.", e);
 		}
-
 	}
 
 	private void waitServiceCompleted(List<FutureTask<Boolean>> tasks) {
@@ -93,7 +92,7 @@ public class Service implements AutoCloseable {
 			try {
 				task.get();
 			} catch (InterruptedException | ExecutionException e) {
-				LOGGER.error("Service error.", e);
+				throw new SstkException("Service error.", e);
 			}
 		}
 	}

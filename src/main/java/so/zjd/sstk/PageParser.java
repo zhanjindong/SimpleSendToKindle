@@ -206,7 +206,7 @@ public class PageParser {
 			try {
 				task.get();
 			} catch (InterruptedException | ExecutionException e) {
-				LOGGER.error("download image error.", e);
+				throw new SstkException("download resource error.", e);
 			}
 		}
 	}

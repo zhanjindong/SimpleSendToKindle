@@ -83,9 +83,9 @@ public class MailSender {
 
 				Transport.send(mimeMessage);
 			} catch (MessagingException e) {
-				LOGGER.error("MessagingException", e);
+				throw new RuntimeException("MessagingException", e);
 			} catch (UnsupportedEncodingException e) {
-				LOGGER.error("UnsupportedEncodingException", e);
+				throw new RuntimeException("UnsupportedEncodingException", e);
 			}
 		}
 	}
