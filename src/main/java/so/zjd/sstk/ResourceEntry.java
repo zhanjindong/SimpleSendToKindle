@@ -18,15 +18,16 @@ public class ResourceEntry {
 	private String savePath;
 	private String fileName;
 
-	private static List<String> supportedImgFormats = new ArrayList<String>();
-
-	static {
-		supportedImgFormats.add(".JPEG");
-		supportedImgFormats.add(".JPG");
-		supportedImgFormats.add(".GIF");
-		supportedImgFormats.add(".PNG");
-		supportedImgFormats.add(".BMP");
-	}
+	// private static List<String> supportedImgFormats = new
+	// ArrayList<String>();
+	//
+	// static {
+	// supportedImgFormats.add(".JPEG");
+	// supportedImgFormats.add(".JPG");
+	// supportedImgFormats.add(".GIF");
+	// supportedImgFormats.add(".PNG");
+	// supportedImgFormats.add(".BMP");
+	// }
 
 	public ResourceEntry(String fileName, String downloadUrl, String savePath) {
 		this.fileName = fileName;
