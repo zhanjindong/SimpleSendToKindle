@@ -31,15 +31,16 @@ public class PageParser {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PageParser.class);
 	private static final char[] IMG_START_TAG = new char[] { '<', 'i', 'm', 'g' };
-	private static final char[] LINK_START_TAG = new char[] { '<', 'l', 'i', 'n', 'k' };
+	private static final char[] META_START_TAG = new char[] { '<', 'm', 'e', 't', 'a' };
 	private static final char[] END_TAG = new char[] { '/', '>' };
+	private static final char[] END_TAG2 = new char[] { '>' };
 
 	private ExecutorService downloaders;
 	private List<FutureTask<Boolean>> futureTasks = new ArrayList<>();
 
 	private PageEntry page;
 	private int imgIndex = 0;
-	private int linkIndex = 0;
+	private int metaIndex = 0;
 
 	public PageParser(ExecutorService service, PageEntry page) {
 		this.downloaders = service;
@@ -58,38 +59,36 @@ public class PageParser {
 		StringBuilder content = page.getContent();
 		for (int i = 0; i < content.length(); i++) {
 			char c = content.charAt(i);
-			// if (linkIndex < 5 && c == LINK_START_TAG[linkIndex]) {
-			// linkIndex++;
-			// } else {
-			// linkIndex = 0;
-			// }
+			if (metaIndex < 5 && c == META_START_TAG[metaIndex]) {
+				metaIndex++;
+			} else {
+				metaIndex = 0;
+			}
 			if (imgIndex < 4 && c == IMG_START_TAG[imgIndex]) {
 				imgIndex++;
 			} else {
 				imgIndex = 0;
 			}
-			// 因为保留CSS会导致生成的页面在Kindle上展示错乱，所以就不下载了。
-			// if (linkIndex == 5) {// <link
-			// processed.delete(processed.length() - 4, processed.length());
-			// element.append("<link");
-			// linkIndex = 0;
-			// while (i < content.length() - 1) {
-			// c = content.charAt(++i);
-			// element.append(c);
-			// if (linkIndex < 2 && c == END_TAG[linkIndex]) {
-			// linkIndex++;
-			// } else {
-			// linkIndex = 0;
-			// }
-			// if (linkIndex == 2) {
-			// linkIndex = 0;
-			// break;
-			// }
-			// }
-			// processed.append(downloadResource(element.toString(), 1));
-			// element.delete(0, element.length());
-			// } else
-			if (imgIndex == 4) {// <img
+			if (metaIndex == 5) {// <meta
+				processed.delete(processed.length() - 4, processed.length());
+				element.append("<meta");
+				metaIndex = 0;
+				while (i < content.length() - 1) {
+					c = content.charAt(++i);
+					element.append(c);
+					if (metaIndex < 1 && c == END_TAG2[metaIndex]) {
+						metaIndex++;
+					} else {
+						metaIndex = 0;
+					}
+					if (metaIndex == 1) {
+						metaIndex = 0;
+						break;
+					}
+				}
+				processed.append(processMeta(element.toString()));
+				element.delete(0, element.length());
+			} else if (imgIndex == 4) {// <img
 				processed.delete(processed.length() - 3, processed.length());
 				element.append("<img");
 				imgIndex = 0;
@@ -113,6 +112,26 @@ public class PageParser {
 			}
 		}
 		page.setContent(processed);
+	}
+
+	// <meta charset="UTF-8">这样会导致kindlegen生成的mobi乱码，需要：
+	// <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	private String processMeta(String input) {
+		if (input.contains("http-equiv") && input.contains("content")) {
+			return input;
+		}
+
+		if (!input.contains("charset=")) {
+			return input;
+		}
+
+		String charset = "UTF-8";
+		List<String> matchs = RegexUtils.findAll("(?<=charset=\").*?(?=\")", input, false);
+		if (!matchs.isEmpty()) {
+			charset = matchs.get(0);
+		}
+
+		return "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=" + charset + "\" />";
 	}
 
 	// 0:<img

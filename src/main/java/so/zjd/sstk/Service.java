@@ -6,6 +6,8 @@ package so.zjd.sstk;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,6 +80,11 @@ public class Service implements AutoCloseable {
 		if (!GlobalConfig.DEBUG_SEND_MAIL) {
 			return;
 		}
+
+		if (!Files.exists(Paths.get(page.getMobiFilePath()))) {
+			return;
+		}
+
 		try {
 			MailSender mailSender = new MailSender(GlobalConfig.CONFIGS);
 			mailSender.sendFrom(page.getTitle(), page.getMobiFilePath());
