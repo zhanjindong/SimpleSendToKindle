@@ -42,7 +42,7 @@ public class PageEntry implements AutoCloseable {
 			this.content = HttpHelper.download(url, GlobalConfig.DOWNLOAD_TIMEOUT);
 			Path path = Paths.get(GlobalConfig.BASE_TEMP_DIR);
 			if (!Files.exists(path)) {
-				Files.createDirectory(path);
+				Files.createDirectories(path);
 			}
 
 			this.tmpDir = GlobalConfig.BASE_TEMP_DIR + GlobalConfig.SLASH + normalizePath(url);
@@ -51,10 +51,10 @@ public class PageEntry implements AutoCloseable {
 			if (Files.exists(path)) {
 				delete(path);
 			}
-			Files.createDirectory(path);
+			Files.createDirectories(path);
 			path = new File(GlobalConfig.BASE_TEMP_DIR + GlobalConfig.SLASH + normalizePath(url) + GlobalConfig.SLASH
 					+ GlobalConfig.RESOURCE_DIR_NAME).toPath();
-			Files.createDirectory(path);
+			Files.createDirectories(path);
 
 			String tmpTitle = RegexUtils.findAll("(?<=<title>).*?(?=</title>)", this.content.toString(), false).get(0);
 			if (StringUtils.isEmpty(tmpTitle)) {
