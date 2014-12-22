@@ -54,8 +54,6 @@ namespace Startup
             //Æô¶¯½ø³Ì
             using (Process process = Process.Start(startInfo))
             {
-                process.Start();
-                //process.WaitForExit();
                 using (StreamReader reader = process.StandardOutput)
                 {
                     return reader.ReadToEnd();
