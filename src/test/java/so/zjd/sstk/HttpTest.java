@@ -9,13 +9,16 @@ import so.zjd.sstk.util.RegexUtils;
 
 public class HttpTest {
 	public static void main(String[] args) throws IOException {
-		String url = "http://wmljava.iteye.com/blog/1846252";
+		String url = "http://www.cnblogs.com/guogangj/p/3235703.html";
 		String content = HttpHelper.download(url, 5000, "utf-8").toString();
 		System.out.println(content);
+
+		OutputStream os = new FileOutputStream("d://test.html");
+		//HttpHelper.download(url, 5000, "utf-8", os);
+
+		StringBuilder sb = HttpHelper.download(url, 1000);
+		System.out.println(sb.toString());
+		os.write(sb.toString().getBytes("UTF-8"));
 		
-//		String imgurl = "http://cms.csdnimg.cn/article/201412/03/547e6167d719e_middle.jpg?_=22960";
-//		System.out.println(imgurl);
-//		OutputStream os = new FileOutputStream("d://test.png");
-//		HttpHelper.download(imgurl, 5000, "utf-8",os);
 	}
 }

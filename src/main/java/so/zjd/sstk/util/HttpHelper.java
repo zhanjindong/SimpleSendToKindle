@@ -28,19 +28,13 @@ public class HttpHelper {
 
 		HttpURLConnection urlConnection = null;
 		InputStream is = null;
-		BufferedReader br = null;
 		StringBuilder result = new StringBuilder();
 
 		try {
 			urlConnection = cretateConnection("GET", url, timeout);
 			is = urlConnection.getInputStream();
-			br = new BufferedReader(new InputStreamReader(is));
-			String readLine = null;
-			while ((readLine = br.readLine()) != null) {
-				result.append(readLine);
-			}
+			result.append(new String(IOUtils.read(is)));
 		} finally {
-			close(br);
 			close(is);
 			close(urlConnection);
 		}
